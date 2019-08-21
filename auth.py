@@ -12,6 +12,11 @@ google_token_url = "https://www.googleapis.com/oauth2/v4/token"
 google_redirect_uri = "https://127.0.0.1:5000/googlecallback"
 scope = ["https://www.googleapis.com/auth/userinfo.email","https://www.googleapis.com/auth/userinfo.profile"]
 
+git_client_id = "507ea9b61b91104a1c2e"
+git_client_secret = "80033eb98accf7582a92dbe9367849092cddf592"
+git_authorization_base_url = 'https://github.com/login/oauth/authorize'
+git_token_url = 'https://github.com/login/oauth/access_token'
+
 
 @app.route("/")
 def home():
@@ -26,6 +31,35 @@ def google():
 
     session['oauth_state'] = state
     return redirect(google_authorization_url)
+
+@app.route("/github")
+def github():
+    """Step 1: User Authorization.
+
+    Redirect the user/resource owner to the OAuth provider (i.e. Github)
+    using an URL with a few key OAuth parameters.
+    """
+    
+    github = OAuth2Session(git_client_id)
+    git_authorization_url, state = github.authorization_url(git_authorization_base_url)
+
+    session['oauth_state'] = state
+    return redirect(git_authorization_url)
+
+
+@app.route("/gitcallback", methods=["GET"])
+def gitcallback():
+    
+
+    github = OAuth2Session(git_client_id, state=session['oauth_state'])
+    token = github.fetch_token(git_token_url, client_secret=git_client_secret,
+                               authorization_response=request.url)
+
+
+    session['oauth_token'] = token
+
+    return redirect(url_for('gitprofile'))
+
 
 
 @app.route("/googlecallback", methods=["GET"])
@@ -48,6 +82,12 @@ def googleprofile():
 
     return jsonify(r.json())
 
+
+@app.route("/profile", methods=["GET"])
+def gitprofile():
+    
+    github = OAuth2Session(git_client_id, token=session['oauth_token'])
+    return jsonify(github.get('https://api.github.com/user').json())
 
 if __name__ == "__main__":
 
