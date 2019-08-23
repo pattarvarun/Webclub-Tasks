@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Image Editor</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <script type="text/javascript" src="script.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+    </head>
+    <body>
+        <h1>Image Editor</h1>
+        <div class="editor">
+            <div class="tools">
+                <button id="save">Save</button>
+                <button id="reset">Reset</button>
+                <input id="load" type="file"/>
+                <p>
+                    <label for="brightness">Brightness</label>
+                    <input id="brightness" name="brightness" type="range" min=-100 max=100 value=0>
+                </p>
+                <p>
+                    <label for="vibrance">Vibrance</label>
+                    <input id="vibrance" name="vibrance" type="range" min=-100 max=100 value=0>
+                </p>
+                <p>
+                    <label for="hue">Hue</label>
+                    <input id="hue" name="hue" type="range" min=-100 max=100 value=0>
+                </p>
+            </div>
+            <img id="image" class="img" src="" alt="Image will be shown here">
+        </div>
+
+    </body>
+</html>
