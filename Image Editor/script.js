@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.onload = function(event) {
                 var img = new Image();
                 img.onload = function() {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
+                    canvas.width = 1000;
+                    canvas.height = 500;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 }
                 img.src = event.target.result;
             }
@@ -37,13 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     };
-    // loadImage.onchange = loadInput;
+    loadInput();
 
     //Apply Slider Effect on Image
 
     function changeSliderHandler(event) {
-        Caman("#image", function renderCaman() {
-            // this.revert(false);
+        Caman("#imageCanvas", function renderCaman() {
+            this.revert(false);
             this[event.target.name](event.target.value).render();
         });
     };
@@ -57,12 +57,31 @@ document.addEventListener('DOMContentLoaded', function() {
     var resetButton = document.getElementById("reset");
 
 
+    //Handling Filter Buttons
+
+    function filterButtonHandler(event) {
+        Caman("#imageCanvas", function() {
+            this.revert(false);
+            this[event.target.id]();
+            this.render();
+
+
+            // ctx.font = '48px serif';
+        });
+    };
+
+    var filterButtons = document.querySelectorAll('.filter');
+    filterButtons.forEach(function(filterButton) {
+        filterButton.onclick = filterButtonHandler;
+    });
+
+
     //Reset Button Handler
     function resetButtonHandler(event) {
         ranges.forEach(function(range) {
             range.value = 0;
         });
-        Caman("#image", function() {
+        Caman("#imageCanvas", function() {
             this.revert(true);
         });
     };
@@ -73,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var saveButton = document.getElementById('save');
 
     function saveButtonHandler(event) {
-        Caman('#image', function() {
+        Caman('#imageCanvas', function() {
             this.render(function() {
                 // this.save('EditedImage.png');
                 var image = this.toBase64();
