@@ -1,0 +1,25 @@
+.container {
+    display: flex;
+    overflow-x: auto;
+}
+
+.container div {
+    margin-right: 15px;
+    background-color: #58f5a9;
+}
+
+.container::-webkit-scrollbar {
+    display: auto;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    height: 92vh;
+    background-color: #00263b;
+    font-family: 'Noto Sans SC', sans-serif;
+}
+
+p {
+    text-align: center;
+}
