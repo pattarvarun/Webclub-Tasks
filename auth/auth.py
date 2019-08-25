@@ -18,6 +18,12 @@ git_authorization_base_url = 'https://github.com/login/oauth/authorize'
 git_token_url = 'https://github.com/login/oauth/access_token'
 
 
+facebook_client_id = "497404544368534"
+facebook_client_secret = "bdbed18fa210e64bcdab979a0f942b4c"
+facebook_authorization_base_url = 'https://www.facebook.com/dialog/oauth'
+facebook_token_url = 'https://graph.facebook.com/oauth/access_token'
+facebook_redirect_uri = 'https://127.0.0.1:5000/facebookcallback'
+
 @app.route("/")
 def home():
     return '<a class="button" href="/google">Google Login</a><br><a class="button" href="/github">Github Login</a><br><a class="button" href="/facebook">Facebook Login</a>'
@@ -47,6 +53,19 @@ def github():
     return redirect(git_authorization_url)
 
 
+@app.route("/facebook")
+def facebook():
+    
+    from requests_oauthlib.compliance_fixes import facebook_compliance_fix
+    facebook = OAuth2Session(facebook_client_id, redirect_uri=facebook_redirect_uri)  
+    facebook = facebook_compliance_fix(facebook)
+
+    facebook_authorization_url, state = facebook.authorization_url(facebook_authorization_base_url)
+
+    session['oauth_state'] = state
+    return redirect(facebook_authorization_url)
+
+
 @app.route("/gitcallback", methods=["GET"])
 def gitcallback():
     
@@ -73,6 +92,17 @@ def googlecallback():
     return redirect(url_for('googleprofile'))
 
 
+@app.route("/facebookcallback", methods=["GET"])
+def facebookcallback():
+    
+    facebook = OAuth2Session(facebook_client_id,redirect_uri=facebook_redirect_uri,state=session['oauth_state'])
+    token = facebook.fetch_token(facebook_token_url,client_secret=facebook_client_secret,authorization_response=request.url)
+
+    session['oauth_token'] = token
+
+    return redirect(url_for('facebookprofile'))
+
+
 @app.route("/googleprofile")
 def googleprofile():
 
@@ -81,6 +111,15 @@ def googleprofile():
     print(type(r.content)) 
 
     return jsonify(r.json())
+
+@app.route("/facebookprofile")
+def facebookprofile():
+
+    facebook = OAuth2Session(facebook_client_id,redirect_uri=facebook_redirect_uri,token=session['oauth_token'])
+    r = facebook.get('https://graph.facebook.com/me?')
+    print(type(r.content)) 
+
+    return jsonify(r.json())    
 
 
 @app.route("/profile", methods=["GET"])
